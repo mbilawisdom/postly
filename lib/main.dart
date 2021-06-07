@@ -1,43 +1,47 @@
+import 'package:Postly/screens/home_screen.dart';
+import 'package:Postly/state/appState.dart';
+import 'package:Postly/state/postState.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(Postly());
 }
 
 class Postly extends StatelessWidget {
   // This widget is the root of your application.
+
+  AppState _app = AppState();
+  PostState _postState = PostState();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ChangeNotifierProvider<AppState>(
+        create: (context) => _app,
+    child: Consumer<AppState>(
+    builder: (context, value, child){
+
+    return MultiProvider(
+    providers: [
+    ChangeNotifierProvider<PostState>(
+    create: (_) => _postState)
+
+    ],
+    child:MaterialApp(
       title: 'Postly',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      theme: ThemeData.from(
+        colorScheme: const ColorScheme.light(),
+      ).copyWith(
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: <TargetPlatform, PageTransitionsBuilder>{
+            TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          },
+        ),
       ),
-      home: MyHomePage(title: 'Posts'),
-    );
+      home: HomeScreen(),
+    ));
   }
+    ));
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Text(widget.title),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
 }
